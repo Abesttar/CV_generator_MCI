@@ -833,40 +833,50 @@ if st.button("Generate CV"):
 
     excel_path = generate_cv(data)
 
+try:
+
     pdf_path = convert_to_pdf(
         excel_path
     )
 
-    st.success("CV berhasil dibuat")
+    pdf_available = True
 
-    # =============================================
-    # NAMA FILE OTOMATIS
-    # =============================================
+except Exception:
 
-    safe_name = nama.strip().replace(" ", "_")
+    pdf_available = False
 
-    if not safe_name:
-        safe_name = "cv_jepang"
+st.success("CV berhasil dibuat")
 
-    excel_filename = f"CV_{safe_name}.xlsx"
-    pdf_filename = f"CV_{safe_name}.pdf"
+# =============================================
+# NAMA FILE OTOMATIS
+# =============================================
 
-    # =============================================
-    # DOWNLOAD EXCEL
-    # =============================================
+safe_name = nama.strip().replace(" ", "_")
 
-    with open(excel_path, "rb") as file:
+if not safe_name:
+    safe_name = "cv_jepang"
 
-        st.download_button(
-            label="Download Excel",
-            data=file,
-            file_name=excel_filename,
-            mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-        )
+excel_filename = f"CV_{safe_name}.xlsx"
+pdf_filename = f"CV_{safe_name}.pdf"
 
-    # =============================================
-    # DOWNLOAD PDF
-    # =============================================
+# =============================================
+# DOWNLOAD EXCEL
+# =============================================
+
+with open(excel_path, "rb") as file:
+
+    st.download_button(
+        label="Download Excel",
+        data=file,
+        file_name=excel_filename,
+        mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    )
+
+# =============================================
+# DOWNLOAD PDF
+# =============================================
+
+if pdf_available:
 
     with open(pdf_path, "rb") as file:
 
@@ -876,3 +886,9 @@ if st.button("Generate CV"):
             file_name=pdf_filename,
             mime="application/pdf"
         )
+
+else:
+
+    st.warning(
+        "PDF export tidak tersedia di Streamlit Cloud"
+    )
