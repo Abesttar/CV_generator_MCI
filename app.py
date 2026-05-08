@@ -830,65 +830,68 @@ if st.button("Generate CV"):
             lainnya
         ),
     }
+    
+
+if st.button("Generate CV"):
 
     excel_path = generate_cv(data)
 
-try:
+    try:
 
-    pdf_path = convert_to_pdf(
-        excel_path
-    )
-
-    pdf_available = True
-
-except Exception:
-
-    pdf_available = False
-
-st.success("CV berhasil dibuat")
-
-# =============================================
-# NAMA FILE OTOMATIS
-# =============================================
-
-safe_name = nama.strip().replace(" ", "_")
-
-if not safe_name:
-    safe_name = "cv_jepang"
-
-excel_filename = f"CV_{safe_name}.xlsx"
-pdf_filename = f"CV_{safe_name}.pdf"
-
-# =============================================
-# DOWNLOAD EXCEL
-# =============================================
-
-with open(excel_path, "rb") as file:
-
-    st.download_button(
-        label="Download Excel",
-        data=file,
-        file_name=excel_filename,
-        mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-    )
-
-# =============================================
-# DOWNLOAD PDF
-# =============================================
-
-if pdf_available:
-
-    with open(pdf_path, "rb") as file:
-
-        st.download_button(
-            label="Download PDF",
-            data=file,
-            file_name=pdf_filename,
-            mime="application/pdf"
+        pdf_path = convert_to_pdf(
+            excel_path
         )
 
-else:
+        pdf_available = True
 
-    st.warning(
-        "PDF export tidak tersedia di Streamlit Cloud"
-    )
+    except Exception:
+
+        pdf_available = False
+
+    st.success("CV berhasil dibuat")
+
+    # =============================================
+    # NAMA FILE OTOMATIS
+    # =============================================
+
+    safe_name = nama.strip().replace(" ", "_")
+
+    if not safe_name:
+        safe_name = "cv_jepang"
+
+    excel_filename = f"CV_{safe_name}.xlsx"
+    pdf_filename = f"CV_{safe_name}.pdf"
+
+    # =============================================
+    # DOWNLOAD EXCEL
+    # =============================================
+
+    with open(excel_path, "rb") as file:
+
+        st.download_button(
+            label="Download Excel",
+            data=file,
+            file_name=excel_filename,
+            mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        )
+
+    # =============================================
+    # DOWNLOAD PDF
+    # =============================================
+
+    if pdf_available:
+
+        with open(pdf_path, "rb") as file:
+
+            st.download_button(
+                label="Download PDF",
+                data=file,
+                file_name=pdf_filename,
+                mime="application/pdf"
+            )
+
+    else:
+
+        st.warning(
+            "PDF export tidak tersedia di Streamlit Cloud"
+        )
