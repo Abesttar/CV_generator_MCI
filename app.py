@@ -832,7 +832,10 @@ if st.button("Generate CV"):
     }
     
 
-if st.button("Generate CV"):
+if st.button(
+    "Generate CV",
+    key="generate_cv_button"
+):
 
     excel_path = generate_cv(data)
 
