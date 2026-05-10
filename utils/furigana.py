@@ -1,7 +1,71 @@
 import re
 
 
+SPECIAL_WORDS = {
+
+    "abdul": "アブドゥル",
+    "malik": "マリク",
+    "muhammad": "ムハンマド",
+    "mohammad": "モハマド",
+    "ahmad": "アフマド",
+    "habibi": "ハビビ",
+    "elsa": "エルサ",
+    "japasal": "ジャパサル",
+    "jepasal": "ジェパサル",
+}
+
+
 KATAKANA_MAP = {
+
+    "kya": "キャ",
+    "kyu": "キュ",
+    "kyo": "キョ",
+
+    "sha": "シャ",
+    "shu": "シュ",
+    "sho": "ショ",
+
+    "cha": "チャ",
+    "chu": "チュ",
+    "cho": "チョ",
+
+    "nya": "ニャ",
+    "nyu": "ニュ",
+    "nyo": "ニョ",
+
+    "hya": "ヒャ",
+    "hyu": "ヒュ",
+    "hyo": "ヒョ",
+
+    "mya": "ミャ",
+    "myu": "ミュ",
+    "myo": "ミョ",
+
+    "rya": "リャ",
+    "ryu": "リュ",
+    "ryo": "リョ",
+
+    "gya": "ギャ",
+    "gyu": "ギュ",
+    "gyo": "ギョ",
+
+    "bya": "ビャ",
+    "byu": "ビュ",
+    "byo": "ビョ",
+
+    "pya": "ピャ",
+    "pyu": "ピュ",
+    "pyo": "ピョ",
+
+    "tsu": "ツ",
+    "shi": "シ",
+    "chi": "チ",
+    "fu": "フ",
+
+    "ja": "ジャ",
+    "ju": "ジュ",
+    "jo": "ジョ",
+
     "a": "ア",
     "i": "イ",
     "u": "ウ",
@@ -15,14 +79,11 @@ KATAKANA_MAP = {
     "ko": "コ",
 
     "sa": "サ",
-    "shi": "シ",
     "su": "ス",
     "se": "セ",
     "so": "ソ",
 
     "ta": "タ",
-    "chi": "チ",
-    "tsu": "ツ",
     "te": "テ",
     "to": "ト",
 
@@ -34,7 +95,6 @@ KATAKANA_MAP = {
 
     "ha": "ハ",
     "hi": "ヒ",
-    "fu": "フ",
     "he": "ヘ",
     "ho": "ホ",
 
@@ -85,69 +145,15 @@ KATAKANA_MAP = {
     "pu": "プ",
     "pe": "ペ",
     "po": "ポ",
-
-    "kya": "キャ",
-    "kyu": "キュ",
-    "kyo": "キョ",
-
-    "sha": "シャ",
-    "shu": "シュ",
-    "sho": "ショ",
-
-    "cha": "チャ",
-    "chu": "チュ",
-    "cho": "チョ",
-
-    "nya": "ニャ",
-    "nyu": "ニュ",
-    "nyo": "ニョ",
-
-    "hya": "ヒャ",
-    "hyu": "ヒュ",
-    "hyo": "ヒョ",
-
-    "mya": "ミャ",
-    "myu": "ミュ",
-    "myo": "ミョ",
-
-    "rya": "リャ",
-    "ryu": "リュ",
-    "ryo": "リョ",
-
-    "gya": "ギャ",
-    "gyu": "ギュ",
-    "gyo": "ギョ",
-
-    "bya": "ビャ",
-    "byu": "ビュ",
-    "byo": "ビョ",
-
-    "pya": "ピャ",
-    "pyu": "ピュ",
-    "pyo": "ピョ",
-
-    "fa": "ファ",
-    "fi": "フィ",
-    "fe": "フェ",
-    "fo": "フォ",
-
-    "va": "ヴァ",
-    "vi": "ヴィ",
-    "vu": "ヴ",
-    "ve": "ヴェ",
-    "vo": "ヴォ",
-
-    "sy": "シャ",
-    "kh": "ク",
-    "dz": "ズ",
-    "dh": "ド",
-    "th": "ト",
 }
 
 
 def word_to_katakana(word):
 
     word = word.lower()
+
+    if word in SPECIAL_WORDS:
+        return SPECIAL_WORDS[word]
 
     result = ""
     i = 0
@@ -168,6 +174,24 @@ def word_to_katakana(word):
                 break
 
         if not matched:
+
+            char = word[i]
+
+            if char == "l":
+                result += "ル"
+
+            elif char == "v":
+                result += "ヴ"
+
+            elif char == "c":
+                result += "ク"
+
+            elif char == "q":
+                result += "ク"
+
+            elif char == "x":
+                result += "クス"
+
             i += 1
 
     return result
@@ -185,6 +209,7 @@ def latin_to_katakana(text):
     converted = []
 
     for word in words:
+
         converted.append(
             word_to_katakana(word)
         )

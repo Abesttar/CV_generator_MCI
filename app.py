@@ -37,8 +37,8 @@ st.set_page_config(
 st.title("CV Generator Jepang")
 
 
-YEARS = list(range(1991, 2027))
-MONTHS = list(range(1, 13))
+YEARS = [""] + list(range(1985, 2027))
+MONTHS = [""] + list(range(1, 13))
 
 UPAH_LIST = [
     "なし",
@@ -152,12 +152,19 @@ with col2:
     kabupaten = st.text_input("Kabupaten")
 
     kode_pos = st.text_input("Kode Pos")
+    provinsi = st.text_input("Provinsi")
+
+    negara = st.text_input(
+    "Negara",
+    value="Indonesia"
+)
 
     tanggal_lahir = st.date_input(
-        "Tanggal Lahir",
-        value=date(2000, 1, 1)
-    )
-
+    "Tanggal Lahir",
+    value=date(2000, 1, 1),
+    min_value=date(1980, 1, 1),
+    max_value=date(2020, 12, 31)
+)
     usia = calculate_age(
         tanggal_lahir
     )
@@ -178,7 +185,8 @@ with col2:
 
 alamat = (
     f"{jalan}, {kampung}, {desa}, "
-    f"{kecamatan}, {kabupaten} {kode_pos}"
+    f"{kecamatan}, {kabupaten} - "
+    f"{kode_pos}, {provinsi}, {negara}"
 )
 
 
@@ -299,7 +307,8 @@ for level in levels:
 
             tahun_mulai = st.selectbox(
                 "Tahun Mulai",
-                YEARS,
+                [""] + YEARS,
+                index=0,
                 key=f"tm_{level}"
             )
 
@@ -307,7 +316,8 @@ for level in levels:
 
             bulan_mulai = st.selectbox(
                 "Bulan Mulai",
-                MONTHS,
+                [""] + MONTHS,
+                index=0,
                 key=f"bm_{level}"
             )
 
@@ -315,7 +325,8 @@ for level in levels:
 
             tahun_selesai = st.selectbox(
                 "Tahun Selesai",
-                YEARS,
+                [""] + YEARS,
+                index=0,
                 key=f"ts_{level}"
             )
 
@@ -323,19 +334,26 @@ for level in levels:
 
             bulan_selesai = st.selectbox(
                 "Bulan Selesai",
-                MONTHS,
+                [""] + MONTHS,
+                index=0,
                 key=f"bs_{level}"
             )
+
+        # =========================================
+        # LEVEL SEKOLAH
+        # =========================================
 
         if level == "SMA":
 
             level_jp = st.selectbox(
                 "Level SMA",
                 [
+                    "",
                     "普通高校　SMA",
                     "職業高校　SMK",
                     "単位高校　PaketC"
                 ],
+                index=0,
                 key="sma_level"
             )
 
@@ -344,37 +362,55 @@ for level in levels:
             level_jp = st.selectbox(
                 "Level Kuliah",
                 [
+                    "",
                     "4年制大学D4・S1",
                     "3年制大学D3"
                 ],
+                index=0,
                 key="kuliah_level"
             )
 
         else:
             level_jp = level
 
+        # =========================================
+        # NAMA SEKOLAH
+        # =========================================
+
         sekolah = st.text_input(
             "Nama Sekolah",
             key=f"sekolah_{level}"
         )
 
+        # =========================================
+        # JURUSAN
+        # =========================================
+
         jurusan = st.selectbox(
             "Jurusan",
             JURUSAN_LIST,
+            index=0,
             key=f"jurusan_{level}"
         )
 
         pendidikan_list.append({
+
             "level": level,
+
             "level_jp": level_jp,
+
             "tahun_mulai": tahun_mulai,
+
             "bulan_mulai": bulan_mulai,
+
             "tahun_selesai": tahun_selesai,
+
             "bulan_selesai": bulan_selesai,
+
             "sekolah": sekolah,
+
             "jurusan": jurusan,
         })
-
 
 # =====================================================
 # PENGALAMAN KERJA
@@ -395,6 +431,7 @@ for i in range(1, 5):
             tm = st.selectbox(
                 "Tahun Mulai",
                 YEARS,
+                index=0,
                 key=f"pktm{i}"
             )
 
@@ -403,6 +440,7 @@ for i in range(1, 5):
             bm = st.selectbox(
                 "Bulan Mulai",
                 MONTHS,
+                index=0,
                 key=f"pkbm{i}"
             )
 
@@ -411,6 +449,7 @@ for i in range(1, 5):
             ts = st.selectbox(
                 "Tahun Selesai",
                 YEARS,
+                index=0,
                 key=f"pkts{i}"
             )
 
@@ -419,6 +458,7 @@ for i in range(1, 5):
             bs = st.selectbox(
                 "Bulan Selesai",
                 MONTHS,
+                index=0,
                 key=f"pkbs{i}"
             )
 
@@ -427,9 +467,14 @@ for i in range(1, 5):
             key=f"perusahaan{i}"
         )
 
+        # =========================================
+        # UPAH DEFAULT KOSONG
+        # =========================================
+
         upah = st.selectbox(
             "Upah Bulanan",
-            UPAH_LIST,
+            [""] + UPAH_LIST,
+            index=0,
             key=f"upah{i}"
         )
 
@@ -442,24 +487,35 @@ for i in range(1, 5):
             pekerjaan
         )
 
+        # =========================================
+        # POSISI DEFAULT KOSONG
+        # =========================================
+
         posisi = st.selectbox(
             "Posisi",
             [
+                "",
                 "契約社員 Karyawan kontrak",
                 "正社員 Karyawan tetap",
                 "アルバイト Part Time"
             ],
+            index=0,
             key=f"posisi{i}"
         )
 
         pengalaman_list.append({
+
             "tm": tm,
             "bm": bm,
             "ts": ts,
             "bs": bs,
+
             "perusahaan": perusahaan,
+
             "upah": upah,
+
             "pekerjaan": pekerjaan_jp,
+
             "posisi": posisi,
         })
 # =====================================================
@@ -474,7 +530,8 @@ with col1:
 
     jp_duration = st.selectbox(
         "日本語学習期間",
-        list(range(1, 21))
+        [""] + list(range(1, 21)),
+        index=0
     )
 
 with col2:
@@ -482,10 +539,12 @@ with col2:
     jp_unit = st.selectbox(
         "Satuan Belajar Jepang",
         [
+            "",
             "ヶ月",
             "週間",
             "年間"
-        ]
+        ],
+        index=0
     )
 
 with col3:
@@ -499,6 +558,7 @@ with col1:
     bahasa = st.selectbox(
         "Bahasa Asing",
         [
+            "",
             "英語",
             "韓国語",
             "中国語",
@@ -509,7 +569,8 @@ with col1:
             "ベトナム語",
             "タイ語",
             "スペイン語"
-        ]
+        ],
+        index=0
     )
 
 with col2:
@@ -517,10 +578,12 @@ with col2:
     level_bahasa = st.selectbox(
         "Level",
         [
+            "",
             "初級",
             "中級",
             "上級"
-        ]
+        ],
+        index=0
     )
 
 with col3:
@@ -528,10 +591,12 @@ with col3:
     bahasa_unit = st.selectbox(
         "Satuan",
         [
+            "",
             "ヶ月",
             "週間",
             "年間"
-        ]
+        ],
+        index=0
     )
 
 # =====================================================
@@ -543,35 +608,45 @@ st.header("Riwayat Jepang")
 pernah_jepang = st.selectbox(
     "Pernah ke Jepang",
     [
+        "",
         "有      Ada",
         "無 Tidak"
-    ]
+    ],
+    index=0
 )
 
 col1, col2, col3, col4 = st.columns(4)
 
 with col1:
+
     japan_tm = st.selectbox(
         "Tahun Mulai Jepang",
-        YEARS
+        [""] + YEARS,
+        index=0
     )
 
 with col2:
+
     japan_bm = st.selectbox(
         "Bulan Mulai Jepang",
-        MONTHS
+        [""] + MONTHS,
+        index=0
     )
 
 with col3:
+
     japan_ts = st.selectbox(
         "Tahun Selesai Jepang",
-        YEARS
+        [""] + YEARS,
+        index=0
     )
 
 with col4:
+
     japan_bs = st.selectbox(
         "Bulan Selesai Jepang",
-        MONTHS
+        [""] + MONTHS,
+        index=0
     )
 
 
@@ -584,16 +659,16 @@ st.header("Negara Lain")
 negara_lain = st.selectbox(
     "Pernah ke Negara Lain",
     [
+        "",
         "有      Ada",
         "無 Tidak"
-    ]
+    ],
+    index=0
 )
 
 negara_nama = st.text_input(
     "Nama Negara"
 )
-
-
 # =====================================================
 # DATA KELUARGA
 # =====================================================
@@ -609,13 +684,22 @@ for i in range(1, 8):
         hubungan = st.selectbox(
             "Hubungan",
             [
+                "",
                 "父 Ayah",
                 "母 Ibu",
                 "兄 Kakak cowo",
                 "姉 Kakak cewe",
                 "弟 Adik cowo",
                 "妹 Adik cewe",
+                "夫 Suami",
+                "妻 Istri",
+                "子 Anak",
+                "祖父 Kakek",
+                "祖母 Nenek",
+                "おじ Paman",
+                "おば Bibi",
             ],
+            index=0,
             key=f"hubungan{i}"
         )
 
@@ -624,10 +708,20 @@ for i in range(1, 8):
             key=f"nama_keluarga{i}"
         )
 
-        usia_keluarga = st.text_input(
+        usia_input = st.text_input(
             "Usia",
             key=f"usia_keluarga{i}"
         )
+
+        # =========================================
+        # TAMBAH 歳 OTOMATIS
+        # =========================================
+
+        usia_keluarga = ""
+
+        if usia_input.strip():
+
+            usia_keluarga = f"{usia_input.strip()} 歳"
 
         pekerjaan_keluarga = st.text_input(
             "Pekerjaan",
@@ -644,8 +738,6 @@ for i in range(1, 8):
             "usia": usia_keluarga,
             "pekerjaan": pekerjaan_keluarga_jp,
         })
-
-
 # =====================================================
 # KONTAK DARURAT
 # =====================================================
@@ -664,14 +756,17 @@ with col2:
 
     kontak_hubungan = st.selectbox(
         "Hubungan",
-        [
-            "ちち",
-            "はは",
-            "あに",
-            "あね",
-            "おとうと",
-            "いもうと"
-        ]
+            [
+                "",
+                "ちち",
+                "はは",
+                "あに",
+                "あね",
+                "おとうと",
+                "いもうと",
+                "おっと",
+                "つま"
+            ]
     )
 
 with col3:
