@@ -5,9 +5,9 @@ from supabase import create_client
 # SUPABASE CONFIG
 # =====================================================
 
-SUPABASE_URL = "ISI_SUPABASE_URL_KAMU"
+SUPABASE_URL = "https://hzszcuuonqbmjlhflsqn.supabase.co"
 
-SUPABASE_KEY = "ISI_SUPABASE_ANON_KEY_KAMU"
+SUPABASE_KEY = "sb_publishable_8cbRrHSs92NBYbEhT6CsXQ_eTBxkrZO"
 
 
 # =====================================================
