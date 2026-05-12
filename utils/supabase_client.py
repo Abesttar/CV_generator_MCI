@@ -1,11 +1,18 @@
 from supabase import create_client
-import streamlit as st
 
 
-SUPABASE_URL = st.secrets["SUPABASE_URL"]
+# =====================================================
+# SUPABASE CONFIG
+# =====================================================
 
-SUPABASE_KEY = st.secrets["SUPABASE_KEY"]
+SUPABASE_URL = "ISI_SUPABASE_URL_KAMU"
 
+SUPABASE_KEY = "ISI_SUPABASE_ANON_KEY_KAMU"
+
+
+# =====================================================
+# CLIENT
+# =====================================================
 
 supabase = create_client(
     SUPABASE_URL,
