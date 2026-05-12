@@ -1266,31 +1266,3 @@ if st.button("Generate CV"):
     st.success(
         "CV berhasil disimpan"
     )
-
-    # =============================================
-    # PREVIEW PDF
-    # =============================================
-
-    if pdf_available:
-
-        st.subheader("Preview CV")
-
-        with open(pdf_path, "rb") as pdf_file:
-
-            base64_pdf = base64.b64encode(
-                pdf_file.read()
-            ).decode("utf-8")
-
-        pdf_display = f"""
-        <iframe
-            src="data:application/pdf;base64,{base64_pdf}"
-            width="100%"
-            height="900"
-            type="application/pdf">
-        </iframe>
-        """
-
-        st.markdown(
-            pdf_display,
-            unsafe_allow_html=True
-        )
