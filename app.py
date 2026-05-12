@@ -1,5 +1,6 @@
 import streamlit as st
-
+import requests
+import base64
 from datetime import date
 
 from utils.formatter import (
@@ -24,6 +25,10 @@ from utils.pdf_export import (
     convert_to_pdf
 )
 
+from utils.upload_cv import (
+    upload_file,
+    save_cv_data
+)
 
 # =====================================================
 # CONFIG
@@ -42,6 +47,7 @@ MONTHS = [""] + list(range(1, 13))
 
 UPAH_LIST = [
     "なし",
+
     "10000円",
     "15000円",
     "20000円",
@@ -55,6 +61,17 @@ UPAH_LIST = [
     "60000円",
     "65000円",
     "70000円",
+    "75000円",
+    "80000円",
+    "85000円",
+    "90000円",
+    "95000円",
+    "100000円",
+    "150000円",
+    "200000円",
+    "250000円",
+    "300000円",
+    "350000円",
 ]
 
 JURUSAN_LIST = [
@@ -106,12 +123,90 @@ JURUSAN_LIST = [
 
 
 # =====================================================
+# API HELPERS
+# =====================================================
+
+BASE_API = "https://www.emsifa.com/api-wilayah-indonesia/api"
+
+
+@st.cache_data
+def get_provinces():
+
+    url = f"{BASE_API}/provinces.json"
+
+    return requests.get(url).json()
+
+
+@st.cache_data
+def get_regencies(province_id):
+
+    url = (
+        f"{BASE_API}/regencies/"
+        f"{province_id}.json"
+    )
+
+    return requests.get(url).json()
+
+
+@st.cache_data
+def get_districts(regency_id):
+
+    url = (
+        f"{BASE_API}/districts/"
+        f"{regency_id}.json"
+    )
+
+    return requests.get(url).json()
+
+
+@st.cache_data
+def get_villages(district_id):
+
+    url = (
+        f"{BASE_API}/villages/"
+        f"{district_id}.json"
+    )
+
+    return requests.get(url).json()
+
+
+
+# =====================================================
+# HITUNG USIA
+# =====================================================
+
+def calculate_age(birth_date):
+
+    today = date.today()
+
+    return (
+        today.year
+        - birth_date.year
+        - (
+            (
+                today.month,
+                today.day
+            )
+            <
+            (
+                birth_date.month,
+                birth_date.day
+            )
+        )
+    )
+
+
+# =====================================================
 # BIODATA
 # =====================================================
 
 st.header("Biodata")
 
 col1, col2 = st.columns(2)
+
+# =====================================================
+# KOLOM KIRI
+# =====================================================
 
 with col1:
 
@@ -126,7 +221,9 @@ with col1:
         "Nama Alphabet"
     )
 
-    furigana = latin_to_katakana(nama)
+    furigana = latin_to_katakana(
+        nama
+    )
 
     st.text_input(
         "Furigana",
@@ -136,35 +233,172 @@ with col1:
 
     foto = st.file_uploader(
         "Upload Foto",
-        type=["jpg", "jpeg", "png"]
+        type=[
+            "jpg",
+            "jpeg",
+            "png"
+        ]
     )
 
-    jalan = st.text_input("Jalan")
+    jalan = st.text_input(
+        "Jalan"
+    )
 
-    kampung = st.text_input("Kampung")
+    kampung = st.text_input(
+        "Kampung"
+    )
 
-    desa = st.text_input("Desa")
+# =====================================================
+# KOLOM KANAN
+# =====================================================
 
 with col2:
 
-    kecamatan = st.text_input("Kecamatan")
+    # =========================================
+    # NEGARA FIX
+    # =========================================
 
-    kabupaten = st.text_input("Kabupaten")
+    negara = "INDONESIA"
 
-    kode_pos = st.text_input("Kode Pos")
-    provinsi = st.text_input("Provinsi")
+    st.text_input(
+        "Negara",
+        value=negara,
+        disabled=True
+    )
 
-    negara = st.text_input(
-    "Negara",
-    value="Indonesia"
-)
+    # =========================================
+    # PROVINSI
+    # =========================================
+
+    provinces = get_provinces()
+
+    province_options = {
+        p["name"]: p["id"]
+        for p in provinces
+    }
+
+    selected_province = st.selectbox(
+        "Provinsi",
+        [""] + list(province_options.keys())
+    )
+
+    province_id = province_options.get(
+        selected_province
+    )
+
+    # =========================================
+    # KABUPATEN
+    # =========================================
+
+    selected_regency = ""
+
+    regency_id = None
+
+    if province_id:
+
+        regencies = get_regencies(
+            province_id
+        )
+
+        regency_options = {
+            r["name"]: r["id"]
+            for r in regencies
+        }
+
+        selected_regency = st.selectbox(
+            "Kabupaten / Kota",
+            [""] + list(
+                regency_options.keys()
+            )
+        )
+
+        regency_id = regency_options.get(
+            selected_regency
+        )
+
+    # =========================================
+    # KECAMATAN
+    # =========================================
+
+    selected_district = ""
+
+    district_id = None
+
+    if regency_id:
+
+        districts = get_districts(
+            regency_id
+        )
+
+        district_options = {
+            d["name"]: d["id"]
+            for d in districts
+        }
+
+        selected_district = st.selectbox(
+            "Kecamatan",
+            [""] + list(
+                district_options.keys()
+            )
+        )
+
+        district_id = district_options.get(
+            selected_district
+        )
+
+    # =========================================
+    # DESA
+    # =========================================
+
+    selected_village = ""
+
+    if district_id:
+
+        villages = get_villages(
+            district_id
+        )
+
+        village_options = [
+            v["name"]
+            for v in villages
+        ]
+
+        selected_village = st.selectbox(
+            "Desa / Kelurahan",
+            [""] + village_options
+        )
+
+    # =========================================
+    # KODE POS MANUAL
+    # =========================================
+
+    kode_pos = st.text_input(
+    "Kode Pos"
+    )
+
+    # =========================================
+    # TANGGAL LAHIR
+    # =========================================
 
     tanggal_lahir = st.date_input(
-    "Tanggal Lahir",
-    value=date(2000, 1, 1),
-    min_value=date(1980, 1, 1),
-    max_value=date(2020, 12, 31)
-)
+        "Tanggal Lahir",
+        value=date(
+            2000,
+            1,
+            1
+        ),
+        min_value=date(
+            1980,
+            1,
+            1
+        ),
+        max_value=date(
+            2020,
+            12,
+            31
+        )
+    )
+
     usia = calculate_age(
         tanggal_lahir
     )
@@ -175,19 +409,51 @@ with col2:
         disabled=True
     )
 
+    # =========================================
+    # GENDER
+    # =========================================
+
     gender = st.selectbox(
         "Jenis Kelamin",
         [
+            "",
             "男            Pria",
             "女            Wanita"
-        ]
+        ],
+        index=0
     )
 
-alamat = (
-    f"{jalan}, {kampung}, {desa}, "
-    f"{kecamatan}, {kabupaten} - "
-    f"{kode_pos}, {provinsi}, {negara}"
+# =====================================================
+# FINAL ALAMAT
+# =====================================================
+
+alamat_parts = [
+
+    jalan,
+    kampung,
+    selected_village,
+    selected_district,
+    selected_regency,
+]
+
+alamat_parts = [
+    x for x in alamat_parts
+    if x
+]
+
+alamat = ", ".join(
+    alamat_parts
 )
+
+if kode_pos:
+
+    alamat += f" - {kode_pos}"
+
+if selected_province:
+
+    alamat += f", {selected_province}"
+
+alamat += ", INDONESIA"
 
 
 # =====================================================
@@ -954,36 +1220,77 @@ if st.button("Generate CV"):
     excel_filename = f"CV_{safe_name}.xlsx"
     pdf_filename = f"CV_{safe_name}.pdf"
 
-    # =============================================
-    # DOWNLOAD EXCEL
-    # =============================================
 
-    with open(excel_path, "rb") as file:
-
-        st.download_button(
-            label="Download Excel",
-            data=file,
-            file_name=excel_filename,
-            mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-        )
 
     # =============================================
-    # DOWNLOAD PDF
+    # UPLOAD EXCEL
+    # =============================================
+
+    excel_url = upload_file(
+        excel_path,
+        "excel"
+    )
+
+    pdf_url = None
+
+    # =============================================
+    # UPLOAD PDF
     # =============================================
 
     if pdf_available:
 
-        with open(pdf_path, "rb") as file:
+        pdf_url = upload_file(
+            pdf_path,
+            "pdf"
+        )
 
-            st.download_button(
-                label="Download PDF",
-                data=file,
-                file_name=pdf_filename,
-                mime="application/pdf"
-            )
+    # =============================================
+    # SAVE DATABASE
+    # =============================================
 
-    else:
+    save_cv_data(
 
-        st.warning(
-            "PDF export tidak tersedia di Streamlit Cloud"
+    nama=nama,
+
+    nomor=nomor,
+
+    alamat=alamat,
+
+    phone=phone,
+
+    excel_url=excel_url,
+
+    pdf_url=pdf_url
+    )
+
+    st.success(
+        "CV berhasil disimpan"
+    )
+
+    # =============================================
+    # PREVIEW PDF
+    # =============================================
+
+    if pdf_available:
+
+        st.subheader("Preview CV")
+
+        with open(pdf_path, "rb") as pdf_file:
+
+            base64_pdf = base64.b64encode(
+                pdf_file.read()
+            ).decode("utf-8")
+
+        pdf_display = f"""
+        <iframe
+            src="data:application/pdf;base64,{base64_pdf}"
+            width="100%"
+            height="900"
+            type="application/pdf">
+        </iframe>
+        """
+
+        st.markdown(
+            pdf_display,
+            unsafe_allow_html=True
         )
