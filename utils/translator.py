@@ -49,107 +49,16 @@ CUSTOM_TRANSLATIONS = {
 
 
 # =====================================================
-# ROMAJI -> JAPANESE
-# =====================================================
-
-ROMAJI_MAP = {
-
-    "watashi": "私",
-    "boku": "僕",
-    "ore": "私",
-
-    "nihongo": "日本語",
-    "nihon": "日本",
-    "kaisha": "会社",
-    "gakkou": "学校",
-    "sensei": "先生",
-
-    "dekiru": "できます",
-    "hanasu": "話します",
-    "taberu": "食べます",
-    "miru": "見ます",
-    "iku": "行きます",
-    "kuru": "来ます",
-    "hataraku": "働きます",
-    "benkyou": "勉強します",
-
-    "suki": "好きです",
-    "tokui": "得意です",
-
-    "ryouri": "料理",
-    "undou": "運動",
-    "tsuri": "釣り",
-
-    "unten": "運転",
-    "pasokon": "パソコン",
-
-    "shigoto": "仕事",
-    "koujou": "工場",
-
-    "arigatou": "ありがとうございます",
-}
-
-
-# =====================================================
 # DETECT JAPANESE
 # =====================================================
 
 def contains_japanese(text):
 
     pattern = re.compile(
-
         r'[\u3040-\u30ff\u4e00-\u9faf]'
-
     )
 
     return bool(pattern.search(text))
-
-
-# =====================================================
-# DETECT ROMAJI
-# =====================================================
-
-def is_romaji(text):
-
-    text = text.lower().strip()
-
-    if contains_japanese(text):
-
-        return False
-
-    pattern = re.fullmatch(
-
-        r"[a-zA-Z\s\-]+",
-
-        text
-    )
-
-    return bool(pattern)
-
-
-# =====================================================
-# ROMAJI CONVERTER
-# =====================================================
-
-def romaji_to_japanese(text):
-
-    words = text.lower().split()
-
-    result = []
-
-    for word in words:
-
-        if word in ROMAJI_MAP:
-
-            result.append(
-                ROMAJI_MAP[word]
-            )
-
-        else:
-
-            result.append(word)
-
-    return " ".join(result)
 
 
 # =====================================================
@@ -160,10 +69,7 @@ def normalize_japanese(text):
 
     replacements = {
 
-        # =========================================
         # dictionary -> polite
-        # =========================================
-
         "できる": "できます",
         "わかる": "わかります",
         "分かる": "分かります",
@@ -178,56 +84,21 @@ def normalize_japanese(text):
         "学ぶ": "学びます",
         "働く": "働きます",
 
-        # =========================================
         # casual -> polite
-        # =========================================
-
         "したい": "したいです",
         "好き": "好きです",
         "得意": "得意です",
-        "趣味": "趣味です",
 
-        # =========================================
-        # remove rough/plain forms
-        # =========================================
-
-        "している": "しています",
+        # casual forms
         "してる": "しています",
-        "やっている": "やっています",
         "やってる": "やっています",
 
-        # =========================================
-        # natural cv wording
-        # =========================================
-
+        # cleaner CV wording
         "ことができます": "できます",
-        "することができます": "できます",
 
-        # =========================================
-        # too casual words
-        # =========================================
-
-        "とても": "大変",
-        "いっぱい": "多く",
-
-        # =========================================
-        # cleaner japanese
-        # =========================================
-
+        # typo cleaner
         "ですです": "です",
         "ますます": "ます",
-
-        # =========================================
-        # N4 STANDARD KANJI
-        # =========================================
-
-        "にほん": "日本",
-        "にほんご": "日本語",
-        "がっこう": "学校",
-        "かいしゃ": "会社",
-        "せんせい": "先生",
-        "べんきょう": "勉強",
-        "しごと": "仕事",
     }
 
     for old, new in replacements.items():
@@ -238,19 +109,17 @@ def normalize_japanese(text):
 
 
 # =====================================================
-# ENSURE POLITE ENDING
+# ENSURE POLITE
 # =====================================================
 
 def ensure_polite(text):
 
     polite_endings = (
-
         "です",
         "ます",
         "ません",
         "ました",
         "できます",
-        "しております",
         "あります",
     )
 
@@ -258,13 +127,10 @@ def ensure_polite(text):
 
         return text
 
-    # =============================================
-    # SHORT NOUN
-    # =============================================
-
+    # jika pendek tambahkan です
     if (
         "。" not in text
-        and len(text) <= 20
+        and len(text) <= 30
     ):
 
         return text + "です"
@@ -273,17 +139,14 @@ def ensure_polite(text):
 
 
 # =====================================================
-# CLEAN EXTRA SPACES
+# CLEAN TEXT
 # =====================================================
 
 def clean_text(text):
 
     text = re.sub(
-
         r"\s+",
-
         " ",
-
         text
     )
 
@@ -291,7 +154,7 @@ def clean_text(text):
 
 
 # =====================================================
-# MAIN FUNCTION
+# MAIN TRANSLATOR
 # =====================================================
 
 def translate_to_japanese(text):
@@ -317,8 +180,7 @@ def translate_to_japanese(text):
     try:
 
         # =================================================
-        # CASE 1
-        # USER INPUT JAPANESE
+        # INPUT SUDAH JEPANG
         # =================================================
 
         if contains_japanese(text):
@@ -334,37 +196,12 @@ def translate_to_japanese(text):
             return result
 
         # =================================================
-        # CASE 2
-        # USER INPUT ROMAJI
-        # =================================================
-
-        if is_romaji(text):
-
-            result = romaji_to_japanese(
-                text
-            )
-
-            result = normalize_japanese(
-                result
-            )
-
-            result = ensure_polite(
-                result
-            )
-
-            return result
-
-        # =================================================
-        # CASE 3
-        # INDONESIAN -> JAPANESE
+        # INDONESIA -> JEPANG
         # =================================================
 
         result = GoogleTranslator(
-
             source="id",
-
             target="ja"
-
         ).translate(text)
 
         result = normalize_japanese(
