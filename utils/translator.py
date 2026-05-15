@@ -58,7 +58,9 @@ def contains_japanese(text):
         r'[\u3040-\u30ff\u4e00-\u9faf]'
     )
 
-    return bool(pattern.search(text))
+    return bool(
+        pattern.search(text)
+    )
 
 
 # =====================================================
@@ -66,6 +68,9 @@ def contains_japanese(text):
 # =====================================================
 
 def clean_text(text):
+
+    if text is None:
+        return ""
 
     text = str(text)
 
@@ -79,7 +84,7 @@ def clean_text(text):
 
 
 # =====================================================
-# NORMALIZE JAPANESE (N4 STYLE)
+# NORMALIZE JAPANESE
 # =====================================================
 
 def normalize_japanese(text):
@@ -109,7 +114,7 @@ def normalize_japanese(text):
         "してる": "しています",
         "やってる": "やっています",
 
-        # cleaner CV wording
+        # cleaner cv wording
         "ことができます": "できます",
 
         # typo cleaner
@@ -127,19 +132,25 @@ def normalize_japanese(text):
 
     for old, new in replacements.items():
 
-        text = text.replace(old, new)
+        text = text.replace(
+            old,
+            new
+        )
 
     return text
 
 
 # =====================================================
 # ENSURE POLITE
-# hanya untuk field tertentu
+# hanya dipakai untuk field formal
 # =====================================================
 
 def ensure_polite(text):
 
-    text = text.strip()
+    text = clean_text(text)
+
+    if not text:
+        return ""
 
     polite_endings = (
         "です",
@@ -150,7 +161,9 @@ def ensure_polite(text):
         "あります",
     )
 
-    if text.endswith(polite_endings):
+    if text.endswith(
+        polite_endings
+    ):
 
         return text
 
@@ -166,11 +179,10 @@ def translate_to_japanese(
     formal=False
 ):
 
-    if not text:
-
-        return ""
-
     text = clean_text(text)
+
+    if not text:
+        return ""
 
     lower_text = text.lower()
 
@@ -184,8 +196,15 @@ def translate_to_japanese(
             lower_text
         ]
 
+        result = normalize_japanese(
+            result
+        )
+
         if formal:
-            result = ensure_polite(result)
+
+            result = ensure_polite(
+                result
+            )
 
         return result
 
@@ -202,6 +221,7 @@ def translate_to_japanese(
             )
 
             if formal:
+
                 result = ensure_polite(
                     result
                 )
@@ -217,17 +237,32 @@ def translate_to_japanese(
             target="ja"
         ).translate(text)
 
+        result = clean_text(
+            result
+        )
+
         result = normalize_japanese(
             result
         )
 
         if formal:
+
             result = ensure_polite(
                 result
             )
 
         return result
 
-    except:
+    # =================================================
+    # FALLBACK
+    # =================================================
+
+    except Exception:
+
+        # kalau translator error
+        # jangan bikin app crash
+
+        if formal:
+            return ensure_polite(text)
 
         return text
