@@ -1,5 +1,6 @@
 from openpyxl import load_workbook
 from openpyxl.drawing.image import Image
+from openpyxl.cell.cell import MergedCell
 
 from PIL import Image as PILImage
 
@@ -12,7 +13,7 @@ TEMPLATE_PATH = "template/template_cv.xlsx"
 FIELD_MAP = {
 
     "nomor": "C2",
-    "tanggal_cv": "P3",
+    "tanggal_cv": "P2",
     "furigana": "F5",
     "nama": "F6",
     "alamat": "F7",
@@ -40,10 +41,18 @@ FIELD_MAP = {
     "keahlian": "M40",
     "kelebihan": "F41",
     "kekurangan": "M41",
-    "lainnya": "K42",
+
+    "bisa_kendara": "F42",
+
+    # MERGED CELL
+    "sim_1": "M42",
+    "sim_2": "N42",
+    "sim_3": "P42",
+    "sim_4": "R42",
 
     "jp_duration": "I25",
     "jp_unit": "J25",
+
     "bahasa": "F26",
     "level_bahasa": "I26",
     "bahasa_unit": "J26",
@@ -57,12 +66,14 @@ PENDIDIKAN_ROWS = {
     3: 15,
 }
 
+
 PENGALAMAN_ROWS = {
     0: 17,
     1: 19,
     2: 21,
     3: 23,
 }
+
 
 KELUARGA_ROWS = {
     0: 29,
@@ -75,21 +86,64 @@ KELUARGA_ROWS = {
 }
 
 
+# =================================================
+# SAFE VALUE
+# =================================================
+
+def safe_value(value):
+
+    if value is None:
+        return "-"
+
+    value = str(value).strip()
+
+    if value == "":
+        return "-"
+
+    return value
+
+
+# =================================================
+# SAFE YEAR
+# =================================================
+
 def safe_year(value):
 
     if value:
         return f"{value}年"
 
-    return ""
+    return "-"
 
+
+# =================================================
+# SAFE MONTH
+# =================================================
 
 def safe_month(value):
 
     if value:
         return f"{value}月"
 
-    return ""
+    return "-"
 
+
+# =================================================
+# WRITE CELL SAFE
+# =================================================
+
+def write_cell(ws, cell, value):
+
+    target_cell = ws[cell]
+
+    if isinstance(target_cell, MergedCell):
+        return
+
+    target_cell.value = safe_value(value)
+
+
+# =================================================
+# GENERATE CV
+# =================================================
 
 def generate_cv(data):
 
@@ -105,7 +159,11 @@ def generate_cv(data):
 
     for key, cell in FIELD_MAP.items():
 
-        ws[cell] = data.get(key, "")
+        write_cell(
+            ws,
+            cell,
+            data.get(key, "-")
+        )
 
     # =================================================
     # HAPUS FOTO TEMPLATE
@@ -114,7 +172,7 @@ def generate_cv(data):
     ws._images = []
 
     # =================================================
-    # FOTO AUTO FIT
+    # FOTO
     # =================================================
 
     foto = data.get("foto")
@@ -126,21 +184,12 @@ def generate_cv(data):
         final_path = "output/final_photo.png"
 
         with open(temp_path, "wb") as f:
-
             f.write(foto.read())
 
         pil_img = PILImage.open(temp_path)
 
         if pil_img.mode != "RGB":
-
             pil_img = pil_img.convert("RGB")
-
-        # =================================================
-        # UKURAN FOTO FINAL
-        # =================================================
-        # sebelumnya terlalu besar
-        # ini sudah diperkecil sedikit agar pas
-        # =================================================
 
         FRAME_WIDTH = 145
         FRAME_HEIGHT = 200
@@ -151,15 +200,19 @@ def generate_cv(data):
 
         frame_ratio = FRAME_WIDTH / FRAME_HEIGHT
 
-        # =================================================
-        # CROP AUTO TENGAH
-        # =================================================
+        # =============================================
+        # CROP
+        # =============================================
 
         if img_ratio > frame_ratio:
 
-            new_width = int(img_height * frame_ratio)
+            new_width = int(
+                img_height * frame_ratio
+            )
 
-            left = (img_width - new_width) // 2
+            left = (
+                img_width - new_width
+            ) // 2
 
             pil_img = pil_img.crop(
                 (
@@ -172,9 +225,13 @@ def generate_cv(data):
 
         else:
 
-            new_height = int(img_width / frame_ratio)
+            new_height = int(
+                img_width / frame_ratio
+            )
 
-            top = (img_height - new_height) // 2
+            top = (
+                img_height - new_height
+            ) // 2
 
             pil_img = pil_img.crop(
                 (
@@ -185,9 +242,9 @@ def generate_cv(data):
                 )
             )
 
-        # =================================================
+        # =============================================
         # RESIZE
-        # =================================================
+        # =============================================
 
         pil_img = pil_img.resize(
             (
@@ -203,105 +260,157 @@ def generate_cv(data):
         excel_img.width = FRAME_WIDTH
         excel_img.height = FRAME_HEIGHT
 
-        # =================================================
-        # TARUH FOTO
-        # =================================================
-
         ws.add_image(excel_img, "P5")
 
     # =================================================
     # PENDIDIKAN
     # =================================================
 
-    for index, item in enumerate(data.get("pendidikan", [])):
+    for index, item in enumerate(
+        data.get("pendidikan", [])
+    ):
 
         if index not in PENDIDIKAN_ROWS:
             continue
 
         row = PENDIDIKAN_ROWS[index]
 
-        ws[f"F{row}"] = safe_year(
-            item.get("tahun_mulai")
+        write_cell(
+            ws,
+            f"F{row}",
+            safe_year(
+                item.get("tahun_mulai")
+            )
         )
 
-        ws[f"G{row}"] = safe_month(
-            item.get("bulan_mulai")
+        write_cell(
+            ws,
+            f"G{row}",
+            safe_month(
+                item.get("bulan_mulai")
+            )
         )
 
-        ws[f"I{row}"] = safe_year(
-            item.get("tahun_selesai")
+        write_cell(
+            ws,
+            f"I{row}",
+            safe_year(
+                item.get("tahun_selesai")
+            )
         )
 
-        ws[f"J{row}"] = safe_month(
-            item.get("bulan_selesai")
+        write_cell(
+            ws,
+            f"J{row}",
+            safe_month(
+                item.get("bulan_selesai")
+            )
         )
 
         level = item.get("level")
 
         if level == "SD":
 
-            ws[f"K{row}"] = "小学生\nSD"
+            level_text = "小学生\nSD"
 
         elif level == "SMP":
 
-            ws[f"K{row}"] = "中学生\nSMP"
+            level_text = "中学生\nSMP"
 
         else:
 
-            ws[f"K{row}"] = item.get(
+            level_text = item.get(
                 "level_jp",
-                ""
+                "-"
             )
 
-        ws[f"L{row}"] = item.get(
-            "sekolah",
-            ""
+        write_cell(
+            ws,
+            f"K{row}",
+            level_text
+        )
+
+        write_cell(
+            ws,
+            f"L{row}",
+            item.get("sekolah")
         )
 
         if row >= 14:
 
-            ws[f"Q{row}"] = item.get(
-                "jurusan",
-                ""
+            write_cell(
+                ws,
+                f"Q{row}",
+                item.get("jurusan")
             )
 
     # =================================================
     # PENGALAMAN
     # =================================================
 
-    for index, item in enumerate(data.get("pengalaman", [])):
+    for index, item in enumerate(
+        data.get("pengalaman", [])
+    ):
 
         if index not in PENGALAMAN_ROWS:
             continue
 
         row = PENGALAMAN_ROWS[index]
 
-        ws[f"F{row}"] = safe_year(
-            item.get("tm")
+        # =============================================
+        # MULAI
+        # =============================================
+
+        write_cell(
+            ws,
+            f"F{row}",
+            safe_year(item.get("tm"))
         )
 
-        ws[f"G{row}"] = safe_month(
-            item.get("bm")
+        write_cell(
+            ws,
+            f"G{row}",
+            safe_month(item.get("bm"))
         )
 
-        ws[f"H{row}"] = item.get(
-            "perusahaan",
-            ""
+        # =============================================
+        # SELESAI
+        # =============================================
+
+        write_cell(
+            ws,
+            f"F{row+1}",
+            safe_year(item.get("ts"))
         )
 
-        ws[f"L{row}"] = item.get(
-            "upah",
-            ""
+        write_cell(
+            ws,
+            f"G{row+1}",
+            safe_month(item.get("bs"))
         )
 
-        ws[f"N{row}"] = item.get(
-            "pekerjaan",
-            ""
+        write_cell(
+            ws,
+            f"H{row}",
+            item.get("perusahaan")
         )
 
-        ws[f"Q{row}"] = item.get(
-            "posisi",
-            ""
+        write_cell(
+            ws,
+            f"L{row}",
+            item.get("upah")
+        )
+
+        write_cell(
+            ws,
+            f"N{row}",
+            item.get("pekerjaan")
+        )
+
+        write_cell(
+            ws,
+            f"Q{row}",
+            item.get("posisi")
         )
 
     # =================================================
@@ -310,15 +419,21 @@ def generate_cv(data):
 
     if data.get("japan_tm"):
 
-        ws["N25"] = (
+        japan_text = (
 
-            f'{data.get("japan_tm")}年 '
+            f'{safe_value(data.get("japan_tm"))}年 '
 
-            f'{data.get("japan_bm")}月 ～ '
+            f'{safe_value(data.get("japan_bm"))}月 ～ '
 
-            f'{data.get("japan_ts")}年 '
+            f'{safe_value(data.get("japan_ts"))}年 '
 
-            f'{data.get("japan_bs")}月'
+            f'{safe_value(data.get("japan_bs"))}月'
+        )
+
+        write_cell(
+            ws,
+            "N25",
+            japan_text
         )
 
     # =================================================
@@ -326,43 +441,52 @@ def generate_cv(data):
     # =================================================
 
     negara_nama = data.get(
-        "negara_nama",
-        ""
+        "negara_nama"
     )
 
     if negara_nama:
 
-        ws["N26"] = f'({negara_nama} 国)'
+        write_cell(
+            ws,
+            "N26",
+            f'({negara_nama} 国)'
+        )
 
     # =================================================
     # KELUARGA
     # =================================================
 
-    for index, item in enumerate(data.get("keluarga", [])):
+    for index, item in enumerate(
+        data.get("keluarga", [])
+    ):
 
         if index not in KELUARGA_ROWS:
             continue
 
         row = KELUARGA_ROWS[index]
 
-        ws[f"B{row}"] = item.get(
-            "hubungan",
-            ""
+        write_cell(
+            ws,
+            f"B{row}",
+            item.get("hubungan")
         )
 
-        ws[f"D{row}"] = item.get(
-            "nama",
-            ""
+        write_cell(
+            ws,
+            f"D{row}",
+            item.get("nama")
         )
 
-        ws[f"I{row}"] = item.get(
-            "usia",
-            ""
+        write_cell(
+            ws,
+            f"I{row}",
+            item.get("usia")
         )
 
-        ws[f"K{row}"] = item.get(
-            "pekerjaan",
-            ""
+        write_cell(
+            ws,
+            f"K{row}",
+            item.get("pekerjaan")
         )
 
     # =================================================

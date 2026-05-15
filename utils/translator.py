@@ -28,17 +28,17 @@ CUSTOM_TRANSLATIONS = {
     "wirausaha": "自営業",
 
     # sifat
-    "jujur": "正直です",
+    "jujur": "正直",
     "disiplin": "規律を守れます",
-    "rajin": "真面目です",
+    "rajin": "真面目",
     "bertanggung jawab": "責任感があります",
     "cepat belajar": "覚えるのが早いです",
 
     # hobi
-    "memasak": "料理です",
-    "olahraga": "スポーツです",
-    "mancing": "釣りです",
-    "musik": "音楽です",
+    "memasak": "料理",
+    "olahraga": "スポーツ",
+    "mancing": "釣り",
+    "musik": "音楽",
 
     # skill
     "mengemudi": "運転できます",
@@ -62,7 +62,24 @@ def contains_japanese(text):
 
 
 # =====================================================
-# FORMAL JAPANESE NORMALIZER
+# CLEAN TEXT
+# =====================================================
+
+def clean_text(text):
+
+    text = str(text)
+
+    text = re.sub(
+        r"\s+",
+        " ",
+        text
+    )
+
+    return text.strip()
+
+
+# =====================================================
+# NORMALIZE JAPANESE (N4 STYLE)
 # =====================================================
 
 def normalize_japanese(text):
@@ -85,9 +102,8 @@ def normalize_japanese(text):
         "働く": "働きます",
 
         # casual -> polite
-        "したい": "したいです",
-        "好き": "好きです",
-        "得意": "得意です",
+        "好きだ": "好きです",
+        "得意だ": "得意です",
 
         # casual forms
         "してる": "しています",
@@ -99,6 +115,14 @@ def normalize_japanese(text):
         # typo cleaner
         "ですです": "です",
         "ますます": "ます",
+
+        # N4 common kanji
+        "にほん": "日本",
+        "にほんご": "日本語",
+        "がっこう": "学校",
+        "かいしゃ": "会社",
+        "べんきょう": "勉強",
+        "しごと": "仕事",
     }
 
     for old, new in replacements.items():
@@ -110,9 +134,12 @@ def normalize_japanese(text):
 
 # =====================================================
 # ENSURE POLITE
+# hanya untuk field tertentu
 # =====================================================
 
 def ensure_polite(text):
+
+    text = text.strip()
 
     polite_endings = (
         "です",
@@ -127,37 +154,17 @@ def ensure_polite(text):
 
         return text
 
-    # jika pendek tambahkan です
-    if (
-        "。" not in text
-        and len(text) <= 30
-    ):
-
-        return text + "です"
-
-    return text
-
-
-# =====================================================
-# CLEAN TEXT
-# =====================================================
-
-def clean_text(text):
-
-    text = re.sub(
-        r"\s+",
-        " ",
-        text
-    )
-
-    return text.strip()
+    return text + "です"
 
 
 # =====================================================
 # MAIN TRANSLATOR
 # =====================================================
 
-def translate_to_japanese(text):
+def translate_to_japanese(
+    text,
+    formal=False
+):
 
     if not text:
 
@@ -173,9 +180,14 @@ def translate_to_japanese(text):
 
     if lower_text in CUSTOM_TRANSLATIONS:
 
-        return CUSTOM_TRANSLATIONS[
+        result = CUSTOM_TRANSLATIONS[
             lower_text
         ]
+
+        if formal:
+            result = ensure_polite(result)
+
+        return result
 
     try:
 
@@ -189,9 +201,10 @@ def translate_to_japanese(text):
                 text
             )
 
-            result = ensure_polite(
-                result
-            )
+            if formal:
+                result = ensure_polite(
+                    result
+                )
 
             return result
 
@@ -208,9 +221,10 @@ def translate_to_japanese(text):
             result
         )
 
-        result = ensure_polite(
-            result
-        )
+        if formal:
+            result = ensure_polite(
+                result
+            )
 
         return result
 

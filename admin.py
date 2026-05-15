@@ -1,4 +1,7 @@
 import streamlit as st
+import requests
+import re
+
 from utils.supabase_client import supabase
 
 
@@ -32,6 +35,59 @@ if "admin_login" not in st.session_state:
 if "admin_username" not in st.session_state:
 
     st.session_state.admin_username = ""
+
+# ====================================================
+# SAFE FILE NAME
+# ====================================================
+
+def safe_filename(name):
+
+    if not name:
+
+        return "CV"
+
+    name = name.upper()
+
+    # hapus karakter aneh
+    name = re.sub(
+        r'[^A-Z0-9\s]',
+        '',
+        name
+    )
+
+    # ganti spasi jadi _
+    name = re.sub(
+        r'\s+',
+        '_',
+        name
+    )
+
+    return name.strip("_")
+
+
+# ====================================================
+# DOWNLOAD FILE
+# ====================================================
+
+def get_file_bytes(url):
+
+    try:
+
+        response = requests.get(
+            url,
+            timeout=30
+        )
+
+        if response.status_code == 200:
+
+            return response.content
+
+    except:
+
+        return None
+
+    return None
+
 
 # ====================================================
 # LOGIN PAGE
@@ -186,16 +242,22 @@ for cv in cv_list:
     with st.container(border=True):
 
         col1, col2 = st.columns(
-            [5,1]
+            [5,2]
+        )
+
+        nama_cv = cv.get(
+            "nama",
+            "CV"
+        )
+
+        safe_name = safe_filename(
+            nama_cv
         )
 
         with col1:
 
             st.subheader(
-                cv.get(
-                    "nama",
-                    "-"
-                )
+                nama_cv
             )
 
             st.caption(
@@ -232,20 +294,46 @@ for cv in cv_list:
                 "pdf_url"
             )
 
+            # =========================================
+            # EXCEL DOWNLOAD
+            # =========================================
+
             if excel_url:
 
-                st.link_button(
-                    "📗 Excel",
-                    excel_url,
-                    use_container_width=True
+                excel_bytes = get_file_bytes(
+                    excel_url
                 )
+
+                if excel_bytes:
+
+                    st.download_button(
+                        label="📗 Download Excel",
+                        data=excel_bytes,
+                        file_name=f"CV_{safe_name}.xlsx",
+                        mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                        use_container_width=True,
+                        key=f"excel_{nomor}"
+                    )
+
+            # =========================================
+            # PDF DOWNLOAD
+            # =========================================
 
             if pdf_url:
 
-                st.link_button(
-                    "📕 PDF",
-                    pdf_url,
-                    use_container_width=True
+                pdf_bytes = get_file_bytes(
+                    pdf_url
                 )
+
+                if pdf_bytes:
+
+                    st.download_button(
+                        label="📕 Download PDF",
+                        data=pdf_bytes,
+                        file_name=f"CV_{safe_name}.pdf",
+                        mime="application/pdf",
+                        use_container_width=True,
+                        key=f"pdf_{nomor}"
+                    )
 
         st.divider()

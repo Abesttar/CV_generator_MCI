@@ -74,52 +74,6 @@ UPAH_LIST = [
     "350000円",
 ]
 
-JURUSAN_LIST = [
-    "",
-    "英語学科",
-    "インドネシア語学科",
-    "音楽科",
-    "外国語学科",
-    "観光学科",
-    "看護学科",
-    "機械学科",
-    "機械整備学科",
-    "漁業学科",
-    "車、バイク整備学科",
-    "経営学科",
-    "経済学科",
-    "芸能学科",
-    "経理学科",
-    "建築学科",
-    "航海学科",
-    "工業学科",
-    "コンピューター学科",
-    "裁縫学科",
-    "情報学科",
-    "助産師学科",
-    "水産学科",
-    "数学科",
-    "ソフトウェア学科",
-    "体育科",
-    "畜産学科",
-    "調理学科",
-    "デザイン学科",
-    "電気学科",
-    "電子学科",
-    "日本語学科",
-    "農学科",
-    "ビジネス学科",
-    "福祉学科",
-    "服飾科",
-    "普通科",
-    "文学科",
-    "ホテル学科",
-    "マネジメント学科",
-    "マルチメディア学科",
-    "薬学科",
-    "養殖学科",
-    "溶接学科",
-]
 
 
 # =====================================================
@@ -195,6 +149,16 @@ def calculate_age(birth_date):
         )
     )
 
+# =====================================================
+# AUTO UPPERCASE
+# =====================================================
+
+def to_upper(value):
+
+    if not value:
+        return ""
+
+    return str(value).upper()
 
 # =====================================================
 # BIODATA
@@ -217,8 +181,10 @@ with col1:
         value=date.today()
     )
 
-    nama = st.text_input(
+    nama = to_upper(
+    st.text_input(
         "Nama Alphabet"
+    )
     )
 
     furigana = latin_to_katakana(
@@ -240,13 +206,17 @@ with col1:
         ]
     )
 
-    jalan = st.text_input(
+    jalan = to_upper(
+    st.text_input(
         "Jalan"
     )
+)
 
-    kampung = st.text_input(
+    kampung = to_upper(
+    st.text_input(
         "Kampung"
     )
+)
 
 # =====================================================
 # KOLOM KANAN
@@ -643,20 +613,22 @@ for level in levels:
         # NAMA SEKOLAH
         # =========================================
 
-        sekolah = st.text_input(
-            "Nama Sekolah",
-            key=f"sekolah_{level}"
+        sekolah = to_upper(
+        st.text_input(
+        "Nama Sekolah",
+        key=f"sekolah_{level}"
+            )
         )
 
         # =========================================
         # JURUSAN
         # =========================================
 
-        jurusan = st.selectbox(
-            "Jurusan",
-            JURUSAN_LIST,
-            index=0,
-            key=f"jurusan_{level}"
+        jurusan = to_upper(
+        st.text_input(
+        "Jurusan",
+        key=f"jurusan_{level}"
+            )
         )
 
         pendidikan_list.append({
@@ -728,9 +700,11 @@ for i in range(1, 5):
                 key=f"pkbs{i}"
             )
 
-        perusahaan = st.text_input(
-            "Nama Perusahaan",
-            key=f"perusahaan{i}"
+        perusahaan = to_upper(
+        st.text_input(
+        "Nama Perusahaan",
+        key=f"perusahaan{i}"
+             )
         )
 
         # =========================================
@@ -750,7 +724,8 @@ for i in range(1, 5):
         )
 
         pekerjaan_jp = translate_to_japanese(
-            pekerjaan
+            pekerjaan,
+            formal=False
         )
 
         # =========================================
@@ -953,10 +928,10 @@ for i in range(1, 8):
                 "",
                 "父 Ayah",
                 "母 Ibu",
-                "兄 Kakak cowo",
-                "姉 Kakak cewe",
-                "弟 Adik cowo",
-                "妹 Adik cewe",
+                "兄 Kakak laki-laki",
+                "姉 Kakak perempuan",
+                "弟 Adik laki-laki",
+                "妹 Adik perempuan",
                 "夫 Suami",
                 "妻 Istri",
                 "子 Anak",
@@ -969,25 +944,41 @@ for i in range(1, 8):
             key=f"hubungan{i}"
         )
 
-        nama_keluarga = st.text_input(
-            "Nama",
-            key=f"nama_keluarga{i}"
+        nama_keluarga = to_upper(
+         st.text_input(
+        "Nama",
+        key=f"nama_keluarga{i}"
+             )
         )
+
+        col_usia1, col_usia2 = st.columns(2)
+
+    with col_usia1:
 
         usia_input = st.text_input(
-            "Usia",
-            key=f"usia_keluarga{i}"
+        "Usia",
+        key=f"usia_keluarga{i}"
+    )
+
+    with col_usia2:
+
+        usia_satuan = st.selectbox(
+        "Satuan",
+        [
+            "歳",
+            "ヶ月"
+        ],
+        key=f"satuan_usia{i}"
         )
 
-        # =========================================
-        # TAMBAH 歳 OTOMATIS
-        # =========================================
+    usia_keluarga = ""
 
-        usia_keluarga = ""
+    if usia_input.strip():
 
-        if usia_input.strip():
-
-            usia_keluarga = f"{usia_input.strip()} 歳"
+        usia_keluarga = (
+        f"{usia_input.strip()} "
+        f"{usia_satuan}"
+        )
 
         pekerjaan_keluarga = st.text_input(
             "Pekerjaan",
@@ -995,7 +986,8 @@ for i in range(1, 8):
         )
 
         pekerjaan_keluarga_jp = translate_to_japanese(
-            pekerjaan_keluarga
+            pekerjaan_keluarga,
+            formal=False
         )
 
         keluarga_list.append({
@@ -1014,25 +1006,27 @@ col1, col2, col3 = st.columns(3)
 
 with col1:
 
-    kontak_nama = st.text_input(
+    kontak_nama = to_upper(
+    st.text_input(
         "Nama Kontak"
+         )
     )
 
 with col2:
 
     kontak_hubungan = st.selectbox(
         "Hubungan",
-            [
-                "",
-                "ちち",
-                "はは",
-                "あに",
-                "あね",
-                "おとうと",
-                "いもうと",
-                "おっと",
-                "つま"
-            ]
+        [
+            "",
+            "父 Ayah",
+            "母 Ibu",
+            "兄 Kakak laki-laki",
+            "姉 Kakak perempuan",
+            "弟 Adik laki-laki",
+            "妹 Adik perempuan",
+            "夫 Suami",
+            "妻 Istri"
+        ]
     )
 
 with col3:
@@ -1053,7 +1047,7 @@ with col3:
 
 st.header("Informasi Tambahan")
 
-alasan = st.text_area("Alasan Melamar")
+alasan = st.text_area("Tujuan Bekerja ke Jepang")
 
 hobi = st.text_area("Hobi")
 
@@ -1063,7 +1057,25 @@ kelebihan = st.text_area("Kelebihan")
 
 kekurangan = st.text_area("Kekurangan")
 
-lainnya = st.text_area("Keterangan Lainnya")
+# =====================================================
+# KENDARAAN & SIM
+# =====================================================
+
+st.header("Kendaraan & SIM")
+
+bisa_kendara = st.selectbox(
+    "Bisa Berkendara",
+    [
+        "",
+        "車 - Mobil",
+        "バイク - Motor",
+        "両方 - Keduanya"]
+)
+
+sim_1 = st.text_input("SIM 1")
+sim_2 = st.text_input("SIM 2")
+sim_3 = st.text_input("SIM 3")
+sim_4 = st.text_input("SIM 4")
 
 
 # =====================================================
@@ -1163,33 +1175,48 @@ if st.button("Generate CV"):
 
         "alasan":
         translate_to_japanese(
-            alasan
+            alasan,
+            formal=True
         ),
 
         "hobi":
         translate_to_japanese(
-            hobi
+            hobi,
+            formal=True
         ),
 
         "keahlian":
         translate_to_japanese(
-            keahlian
+            keahlian,
+            formal=True
         ),
 
         "kelebihan":
         translate_to_japanese(
-            kelebihan
+            kelebihan,
+            formal=True
         ),
 
         "kekurangan":
         translate_to_japanese(
-            kekurangan
+            kekurangan,
+            formal=True
         ),
 
-        "lainnya":
-        translate_to_japanese(
-            lainnya
-        ),
+        "bisa_kendara":
+        bisa_kendara,
+
+        "sim_1":
+        to_upper(sim_1),
+
+        "sim_2":
+        to_upper(sim_2),
+
+        "sim_3":
+        to_upper(sim_3),
+
+        "sim_4":
+        to_upper(sim_4),
     }
 
     excel_path = generate_cv(data)
