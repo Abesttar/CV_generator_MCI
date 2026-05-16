@@ -1238,9 +1238,6 @@ if st.button("Generate CV"):
 
         "sim_3":
         to_upper(sim_3),
-
-        "sim_4":
-        to_upper(sim_4),
     }
 
     excel_path = generate_cv(data)
