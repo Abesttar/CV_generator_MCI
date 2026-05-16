@@ -1,7 +1,7 @@
 from openpyxl import load_workbook
 
 wb = load_workbook(
-    "template/template_cv.xlsx"
+    "template/CV_ASLI.xlsx"
 )
 
 ws = wb["NAMA"]

@@ -1067,30 +1067,25 @@ kendaraan_options = [
 
     "",
 
-    "普通車 - Mobil",
-    "軽自動車 - Mobil Kecil",
+    "普通車 - MOBIL",
+    "バイク - MOTOR",
+    "トラック - TRUK",
+    "大型トラック - TRUK BESAR",
+    "バス - BUS",
+    "フォークリフト - FORKLIFT",
+    "ショベルカー - EXCAVATOR",
+    "ブルドーザー - BULLDOZER",
+    "クレーン - CRANE",
+    "トラクター - TRAKTOR",
 
-    "バイク - Motor",
-    "大型バイク - Motor Besar",
-
-    "トラック - Truk",
-    "大型トラック - Truk Besar",
-
-    "バス - Bus",
-
-    "フォークリフト - Forklift",
-    "ショベルカー - Excavator",
-    "ブルドーザー - Bulldozer",
-    "クレーン - Crane",
-
-    "トラクター - Traktor",
-
-    "両方 - Mobil & Motor",
-
-    "その他 - Lainnya"
+    "その他 - LAINNYA"
 ]
 
 col1, col2, col3 = st.columns(3)
+
+# =====================================================
+# KENDARAAN 1
+# =====================================================
 
 with col1:
 
@@ -1100,12 +1095,19 @@ with col1:
         key="kendaraan_1"
     )
 
-    if bisa_kendara_1 == "その他 - Lainnya":
+    if bisa_kendara_1 == "その他 - LAINNYA":
 
-        bisa_kendara_1 = st.text_input(
-            "Lainnya 1",
-            key="lainnya_1"
+        bisa_kendara_1 = to_upper(
+            st.text_input(
+                "Isi Kendaraan Lainnya 1",
+                placeholder="Contoh: 救急車 - AMBULANS",
+                key="lainnya_1"
+            )
         )
+
+# =====================================================
+# KENDARAAN 2
+# =====================================================
 
 with col2:
 
@@ -1115,12 +1117,19 @@ with col2:
         key="kendaraan_2"
     )
 
-    if bisa_kendara_2 == "その他 - Lainnya":
+    if bisa_kendara_2 == "その他 - LAINNYA":
 
-        bisa_kendara_2 = st.text_input(
-            "Lainnya 2",
-            key="lainnya_2"
+        bisa_kendara_2 = to_upper(
+            st.text_input(
+                "Isi Kendaraan Lainnya 2",
+                placeholder="Contoh: 救急車 - AMBULANS",
+                key="lainnya_2"
+            )
         )
+
+# =====================================================
+# KENDARAAN 3
+# =====================================================
 
 with col3:
 
@@ -1130,14 +1139,15 @@ with col3:
         key="kendaraan_3"
     )
 
-    if bisa_kendara_3 == "その他 - Lainnya":
+    if bisa_kendara_3 == "その他 - LAINNYA":
 
-        bisa_kendara_3 = st.text_input(
-            "Lainnya 3",
-            key="lainnya_3"
+        bisa_kendara_3 = to_upper(
+            st.text_input(
+                "Isi Kendaraan Lainnya 3",
+                placeholder="Contoh: 救急車 - AMBULANS",
+                key="lainnya_3"
+            )
         )
-
-
 
 # =====================================================
 # INPUT MANUAL JIKA PILIH LAINNYA
@@ -1171,9 +1181,26 @@ if bisa_kendara_3 == "その他 - Lainnya":
 # SIM
 # =====================================================
 
-sim_1 = st.text_input("SIM 1")
-sim_2 = st.text_input("SIM 2")
-sim_3 = st.text_input("SIM 3")
+sim_1 = to_upper(
+    st.text_input(
+        "SIM 1",
+        key="sim_1_input"
+    )
+)
+
+sim_2 = to_upper(
+    st.text_input(
+        "SIM 2",
+        key="sim_2_input"
+    )
+)
+
+sim_3 = to_upper(
+    st.text_input(
+        "SIM 3",
+        key="sim_3_input"
+    )
+)
 
 # =====================================================
 # GENERATE
