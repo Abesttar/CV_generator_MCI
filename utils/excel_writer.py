@@ -7,7 +7,7 @@ from PIL import Image as PILImage
 import os
 
 
-TEMPLATE_PATH = "template/kiblatfix_cv.xlsx"
+TEMPLATE_PATH = "template/kiblatlast_cv.xlsx"
 
 
 FIELD_MAP = {
