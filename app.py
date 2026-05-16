@@ -387,8 +387,8 @@ with col2:
         "Jenis Kelamin",
         [
             "",
-            "男            Pria",
-            "女            Wanita"
+            "男            PRIA",
+            "女            WANITA"
         ],
         index=0
     )
@@ -450,11 +450,11 @@ with col2:
     agama = st.selectbox(
         "Agama",
         [
-            "イスラム教　   Islam",
-            "キリスト教    Kristen",
-            "カトリック    Katolik",
-            "ヒンドゥー教  Hindu",
-            "仏教          Buddha"
+            "イスラム教　   ISLAM",
+            "キリスト教   KRISTEN",
+            "カトリック    KATOLIK",
+            "ヒンドゥー教  HINDU",
+            "仏教          BUDDHA"
         ]
     )
 
@@ -483,9 +483,9 @@ with col2:
     status = st.selectbox(
         "Status",
         [
-            "未婚 Single",
-            "既婚 Menikah",
-            "離婚 Cerai"
+            "未婚 SINGLE",
+            "既婚 MENIKAH",
+            "離婚 CERAI"
         ]
     )
 
@@ -494,7 +494,7 @@ with col3:
     anak = st.selectbox(
         "Anak",
         [
-            "無 　Tidak",
+            "無 　TIDAK",
             "1",
             "2",
             "3",
@@ -512,8 +512,8 @@ with col4:
 paspor = st.selectbox(
     "Paspor",
     [
-        "有      Ada",
-        "無      Tidak"
+        "有      ADA",
+        "無      TIDAK"
     ]
 )
 
@@ -850,8 +850,8 @@ pernah_jepang = st.selectbox(
     "Pernah ke Jepang",
     [
         "",
-        "有      Ada",
-        "無 Tidak"
+        "有      ADA",
+        "無 TIDAK"
     ],
     index=0
 )
@@ -901,8 +901,8 @@ negara_lain = st.selectbox(
     "Pernah ke Negara Lain",
     [
         "",
-        "有      Ada",
-        "無 Tidak"
+        "有      ADA",
+        "無 TIDAK"
     ],
     index=0
 )
@@ -1067,16 +1067,40 @@ bisa_kendara = st.selectbox(
     "Bisa Berkendara",
     [
         "",
-        "車 - Mobil",
+        "普通車 - Mobil",
+        "軽自動車 - Mobil Kecil",
         "バイク - Motor",
-        "両方 - Keduanya"]
+        "大型バイク - Motor Besar",
+        "トラック - Truk",
+        "大型トラック - Truk Besar",
+        "バス - Bus",
+        "フォークリフト - Forklift",
+        "ショベルカー - Excavator",
+        "ブルドーザー - Bulldozer",
+        "クレーン - Crane",
+        "トラクター - Traktor",
+        "両方 - Mobil & Motor",
+        "その他 - Lainnya"
+    ],
+    index=0
 )
+
+# =====================================================
+# INPUT MANUAL JIKA PILIH LAINNYA
+# =====================================================
+
+if bisa_kendara == "その他 - Lainnya":
+
+    custom_kendara = st.text_input(
+        "Isi Kendaraan Lainnya",
+        placeholder="contoh: 救急車 - Ambulans"
+    )
+
+    bisa_kendara = custom_kendara
 
 sim_1 = st.text_input("SIM 1")
 sim_2 = st.text_input("SIM 2")
 sim_3 = st.text_input("SIM 3")
-sim_4 = st.text_input("SIM 4")
-
 
 # =====================================================
 # GENERATE

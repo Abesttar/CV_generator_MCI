@@ -43,12 +43,13 @@ FIELD_MAP = {
     "kekurangan": "M41",
 
     "bisa_kendara": "F42",
+    "bisa_kendara": "F43",
+    "bisa_kendara": "F44",
 
     # MERGED CELL
     "sim_1": "M42",
-    "sim_2": "N42",
-    "sim_3": "P42",
-    "sim_4": "R42",
+    "sim_2": "M43",
+    "sim_3": "M44",
 
     "jp_duration": "I25",
     "jp_unit": "J25",
