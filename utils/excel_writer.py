@@ -42,9 +42,9 @@ FIELD_MAP = {
     "kelebihan": "F41",
     "kekurangan": "M41",
 
-    "bisa_kendara": "F42",
-    "bisa_kendara": "F43",
-    "bisa_kendara": "F44",
+    "bisa_kendara_1": "F42",
+    "bisa_kendara_2": "F43",
+    "bisa_kendara_3": "F44",
 
     # MERGED CELL
     "sim_1": "M42",

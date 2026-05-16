@@ -1063,40 +1063,113 @@ kekurangan = st.text_area("Kekurangan")
 
 st.header("Kendaraan & SIM")
 
-bisa_kendara = st.selectbox(
-    "Bisa Berkendara",
-    [
-        "",
-        "普通車 - Mobil",
-        "軽自動車 - Mobil Kecil",
-        "バイク - Motor",
-        "大型バイク - Motor Besar",
-        "トラック - Truk",
-        "大型トラック - Truk Besar",
-        "バス - Bus",
-        "フォークリフト - Forklift",
-        "ショベルカー - Excavator",
-        "ブルドーザー - Bulldozer",
-        "クレーン - Crane",
-        "トラクター - Traktor",
-        "両方 - Mobil & Motor",
-        "その他 - Lainnya"
-    ],
-    index=0
-)
+kendaraan_options = [
+
+    "",
+
+    "普通車 - Mobil",
+    "軽自動車 - Mobil Kecil",
+
+    "バイク - Motor",
+    "大型バイク - Motor Besar",
+
+    "トラック - Truk",
+    "大型トラック - Truk Besar",
+
+    "バス - Bus",
+
+    "フォークリフト - Forklift",
+    "ショベルカー - Excavator",
+    "ブルドーザー - Bulldozer",
+    "クレーン - Crane",
+
+    "トラクター - Traktor",
+
+    "両方 - Mobil & Motor",
+
+    "その他 - Lainnya"
+]
+
+col1, col2, col3 = st.columns(3)
+
+with col1:
+
+    bisa_kendara_1 = st.selectbox(
+        "Kendaraan 1",
+        kendaraan_options,
+        key="kendaraan_1"
+    )
+
+    if bisa_kendara_1 == "その他 - Lainnya":
+
+        bisa_kendara_1 = st.text_input(
+            "Lainnya 1",
+            key="lainnya_1"
+        )
+
+with col2:
+
+    bisa_kendara_2 = st.selectbox(
+        "Kendaraan 2",
+        kendaraan_options,
+        key="kendaraan_2"
+    )
+
+    if bisa_kendara_2 == "その他 - Lainnya":
+
+        bisa_kendara_2 = st.text_input(
+            "Lainnya 2",
+            key="lainnya_2"
+        )
+
+with col3:
+
+    bisa_kendara_3 = st.selectbox(
+        "Kendaraan 3",
+        kendaraan_options,
+        key="kendaraan_3"
+    )
+
+    if bisa_kendara_3 == "その他 - Lainnya":
+
+        bisa_kendara_3 = st.text_input(
+            "Lainnya 3",
+            key="lainnya_3"
+        )
+
+
 
 # =====================================================
 # INPUT MANUAL JIKA PILIH LAINNYA
 # =====================================================
 
-if bisa_kendara == "その他 - Lainnya":
+if bisa_kendara_1 == "その他 - Lainnya":
 
-    custom_kendara = st.text_input(
-        "Isi Kendaraan Lainnya",
-        placeholder="contoh: 救急車 - Ambulans"
+    bisa_kendara_1 = st.text_input(
+        "Isi Kendaraan Lainnya 1",
+        placeholder="contoh: 救急車 - Ambulans",
+        key="custom_1"
     )
 
-    bisa_kendara = custom_kendara
+if bisa_kendara_2 == "その他 - Lainnya":
+
+    bisa_kendara_2 = st.text_input(
+        "Isi Kendaraan Lainnya 2",
+        placeholder="contoh: 救急車 - Ambulans",
+        key="custom_2"
+    )
+
+if bisa_kendara_3 == "その他 - Lainnya":
+
+    bisa_kendara_3 = st.text_input(
+        "Isi Kendaraan Lainnya 3",
+        placeholder="contoh: 救急車 - Ambulans",
+        key="custom_3"
+    )
+
+# =====================================================
+# SIM
+# =====================================================
 
 sim_1 = st.text_input("SIM 1")
 sim_2 = st.text_input("SIM 2")
@@ -1227,8 +1300,14 @@ if st.button("Generate CV"):
             formal=True
         ),
 
-        "bisa_kendara":
-        bisa_kendara,
+        "bisa_kendara_1":
+        bisa_kendara_1,
+
+        "bisa_kendara_2":
+        bisa_kendara_2,
+
+        "bisa_kendara_3":
+        bisa_kendara_3,
 
         "sim_1":
         to_upper(sim_1),
